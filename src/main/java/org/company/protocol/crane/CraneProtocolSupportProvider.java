@@ -1,5 +1,6 @@
 package org.company.protocol.crane;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jetlinks.core.ProtocolSupport;
 import org.jetlinks.core.defaults.CompositeProtocolSupport;
 import org.jetlinks.core.device.DeviceRegistry;
@@ -13,6 +14,7 @@ import org.jetlinks.supports.official.JetLinksDeviceMetadataCodec;
 import org.jetlinks.supports.server.DecodedClientMessageHandler;
 import reactor.core.publisher.Mono;
 
+@Slf4j(topic = "system.crane")
 public class CraneProtocolSupportProvider implements ProtocolSupportProvider {
 
     private static final DefaultConfigMetadata httpRequest = new DefaultConfigMetadata("Http请求配置", "")
@@ -27,8 +29,14 @@ public class CraneProtocolSupportProvider implements ProtocolSupportProvider {
         support.setDescription("塔吊设备协议");
         support.setMetadataCodec(new JetLinksDeviceMetadataCodec());
 
-        CraneDeviceMessageCodec codec = new CraneDeviceMessageCodec();
-        support.addMessageCodecSupport(DefaultTransport.HTTP, () -> Mono.just(codec));
+        serviceContext.getService(DeviceRegistry.class)
+                .ifPresent(deviceRegistry -> {
+                    CraneDeviceMessageCodec codec = new CraneDeviceMessageCodec(deviceRegistry);
+                    support.addMessageCodecSupport(DefaultTransport.HTTP, () -> Mono.just(codec));
+                });
+
+//            CraneDeviceMessageCodec codec = new CraneDeviceMessageCodec();
+//            support.addMessageCodecSupport(DefaultTransport.HTTP, () -> Mono.just(codec));
         support.addConfigMetadata(DefaultTransport.HTTP, httpRequest);
         CraneDeviceStateChecker httpDeviceStateChecker = new CraneDeviceStateChecker();
         support.setDeviceStateChecker(httpDeviceStateChecker);
