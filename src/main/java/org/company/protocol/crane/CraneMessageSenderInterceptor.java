@@ -5,16 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.jetlinks.core.Value;
 import org.jetlinks.core.device.DeviceOperator;
 import org.jetlinks.core.message.DeviceMessage;
-import org.jetlinks.core.message.DeviceMessageReply;
-import org.jetlinks.core.message.function.FunctionInvokeMessage;
-import org.jetlinks.core.message.function.FunctionInvokeMessageReply;
-import org.jetlinks.core.message.function.FunctionParameter;
 import org.jetlinks.core.message.interceptor.DeviceMessageSenderInterceptor;
-import org.jetlinks.core.message.property.ReadPropertyMessage;
-import org.jetlinks.core.message.property.ReportPropertyMessage;
 import org.jetlinks.core.message.property.WritePropertyMessage;
 import org.jetlinks.core.message.property.WritePropertyMessageReply;
 import org.jetlinks.supports.server.DecodedClientMessageHandler;
@@ -23,9 +16,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -94,6 +84,7 @@ public class CraneMessageSenderInterceptor implements DeviceMessageSenderInterce
                                         writePropertyMessageReply.getProperties().put("WindLimit",object.getString("F_WindLimit"));
                                         writePropertyMessageReply.getProperties().put("PitchLimit",object.getString("F_PitchLimit"));
                                         writePropertyMessageReply.getProperties().put("RollLimit",object.getString("F_RollLimit"));
+                                        writePropertyMessageReply.getProperties().put("TelNo", object.getString("F_TelNo"));
                                         return Mono.just(writePropertyMessageReply)
                                                 .map(deviceMessage->(R)deviceMessage);
                                     })
