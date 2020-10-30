@@ -12,12 +12,12 @@ import org.jetlinks.core.message.Message;
 import org.jetlinks.core.message.codec.*;
 import org.jetlinks.core.message.codec.http.HttpExchangeMessage;
 import org.jetlinks.core.message.codec.http.SimpleHttpResponseMessage;
+import org.jetlinks.core.server.session.DeviceSession;
 import org.reactivestreams.Publisher;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import reactor.core.publisher.Mono;
 
-import java.util.Set;
+import java.time.Duration;
 
 @AllArgsConstructor
 @Setter
@@ -38,7 +38,8 @@ public class CraneDeviceMessageCodec extends UrlTopicMessageCodec implements Dev
         String url = message.getUrl();
         JSONObject payload = message.payloadAsJson();
         String deviceId = payload.getString("imei");
-
+        DeviceSession session = ((FromDeviceMessageContext)messageDecodeContext).getSession();
+        session.setKeepAliveTimeout(Duration.ofSeconds(600));
         return Mono.defer(() -> {
             return registry.getDevice(deviceId)
                             .flatMap(operator -> {
@@ -77,6 +78,6 @@ public class CraneDeviceMessageCodec extends UrlTopicMessageCodec implements Dev
     @Override
     public Publisher<? extends EncodedMessage> encode(@NotNull MessageEncodeContext messageEncodeContext) {
         log.info("CraneDeviceMessageCodec encode");
-        return null;
+        return Mono.empty();
     }
 }
