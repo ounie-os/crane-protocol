@@ -35,11 +35,9 @@ public class CraneProtocolSupportProvider implements ProtocolSupportProvider {
                     support.addMessageCodecSupport(DefaultTransport.HTTP, () -> Mono.just(codec));
                 });
 
-//            CraneDeviceMessageCodec codec = new CraneDeviceMessageCodec();
-//            support.addMessageCodecSupport(DefaultTransport.HTTP, () -> Mono.just(codec));
         support.addConfigMetadata(DefaultTransport.HTTP, httpRequest);
-        CraneDeviceStateChecker httpDeviceStateChecker = new CraneDeviceStateChecker();
-        support.setDeviceStateChecker(httpDeviceStateChecker);
+//        CraneDeviceStateChecker httpDeviceStateChecker = new CraneDeviceStateChecker();
+//        support.setDeviceStateChecker(httpDeviceStateChecker);
 
         serviceContext.getService(DecodedClientMessageHandler.class)
                 .ifPresent(handler -> support.addMessageSenderInterceptor(new CraneMessageSenderInterceptor(handler)));
